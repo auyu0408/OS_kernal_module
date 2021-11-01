@@ -42,7 +42,7 @@ static void cpu_show(struct seq_file *m, struct cpuinfo_x86 *c)
                "clflush size\t: %u\n"
                "cache_alignment\t\t: %d\n"
                "address sizes\t\t: %u bits physical, %u bits virtual\n\n"
-               , c-> cpu_index, c->x86_model_id[0] ? c->x86_model_id : "unknown", c->phys_proc_id
+               , c->cpu_index, c->x86_model_id[0] ? c->x86_model_id : "unknown", c->phys_proc_id
                , c->cpu_core_id, c->booted_cores, c->x86_cache_size, c->x86_clflush_size
                , c->x86_cache_alignment, c->x86_phys_bits, c->x86_virt_bits);
 }
@@ -126,7 +126,7 @@ static int my_info_show(struct seq_file *m, void *v)
     //CPU variable
     struct cpuinfo_x86* c = v;
 
-    if(cpu == 0)
+    if(c->cpu_index == 0)
         version_show(m);
     cpu_show(m, c);
     return 0;
@@ -146,7 +146,7 @@ nr_cpu_ids- total process we have
 return:
 NULL- All processor printed, then go to Stop operation
 &cpu_data(*pos)- CPU data we havn't print
-*/.
+*/
 static void *my_info_start(struct seq_file *m, loff_t *pos)
 {
     *pos = cpumask_next(*pos - 1, cpu_online_mask);
@@ -182,7 +182,7 @@ argument:
 m- Sequence file we read
 
 return: no
-*/.
+*/
 static void my_info_stop(struct seq_file *m, void *v)
 {
     other_show(m);
