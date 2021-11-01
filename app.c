@@ -4,25 +4,44 @@
 
 int main()
 {
-    char* option = NULL;//save input string from stdin
-    const char* filename = "/proc/my_info";//file name
-    char* contents = NULL;//save the input from the file
-    size_t len = 0;//save the length of string
+    char* option = NULL;//Save input from stdin
+    const char* filename = "/proc/my_info";//File name
+    char* contents = NULL;//Get input from file
+    size_t len = 0;//Save string length
 
+    //Open and close file at each question, since information may change automatically
     while(1)
     {
-        int flag = 0;//use to check your position
-        FILE *fp = fopen(filename, "r");//save the opened filed
+        int flag = 0;//Check position in file
+        FILE *fp = fopen(filename, "r");//File pointer
+        //Check we get file
         if(!fp)
         {
             puts("Proc file doesn't exist\n");
             exit(0);
         }
+        //Ask operation
         printf("Which information do you want?\n");
         printf("Version(v),CPU(c),Memory(m),Time(t),All(a),Exit(e)?\n");
+        //Get answer from stdin
         if(getline(&option, &len, stdin) == 1);
         printf("\n");
-        if(*option =='v')
+        /*
+        Option judge
+        Do action based on input.
+
+        variable:
+        option-
+        Check what we want.
+        ex. version (x), v (o), V (x), b (x)
+        Incorrect input, print "Wrong input type."
+        flag- Record how many title fp read
+        contents- Get content. Print if we need it
+
+        Repeated until we get input "e"
+        */
+        //Version
+        if(strcmp(option, "v\n")==0)
         {
             while (getline(&contents, &len, fp) != -1)
             {
@@ -38,7 +57,8 @@ int main()
                 }
             }
         }
-        else if(*option=='c')
+        //Cpu information
+        else if(strcmp(option, "c\n")==0)
         {
             while (getline(&contents, &len, fp) != -1)
             {
@@ -62,7 +82,8 @@ int main()
                 }
             }
         }
-        else if(*option=='m')
+        //Memory information
+        else if(strcmp(option, "m\n")==0)
         {
             while (getline(&contents, &len, fp) != -1)
             {
@@ -86,7 +107,8 @@ int main()
                 }
             }
         }
-        else if(*option=='t')
+        //Memory information
+        else if(strcmp(option, "t\n")==0)
         {
             while (getline(&contents, &len, fp) != -1)
             {
@@ -106,17 +128,20 @@ int main()
             }
             printf("------------------------------------------------------------\n");
         }
-        else if(*option=='a')
+        //Print all file
+        else if(strcmp(option, "a\n")==0)
         {
             while (getline(&contents, &len, fp) != -1)
                 printf("%s", contents);
             printf("------------------------------------------------------------\n");
         }
-        else if(*option=='e')
+        //exit the application
+        else if(strcmp(option, "e\n")==0)
             break;
+        //incorrect input
         else
         {
-            printf("Wrong input word.\n");
+            printf("Wrong input type.\n");
             printf("------------------------------------------------------------\n");
         }
         fclose(fp);
