@@ -1,20 +1,38 @@
 #include "my_info.h"
 
-//define procfile variable
 #define PROC_NAME "my_info"//procfilename 
 
-//Version show
+/*
+version_show()
+Put Version information into file
+
+argument:
+m- Sequence file we read
+variable:
+UTS_RELEASE- kernel version
+
+return: no
+*/
 static void version_show(struct seq_file *m)
 {
+    //put version information into sequence input
     seq_puts(m, "\n=============Version=============\n");
     seq_printf(m, "Linux version %s\n", UTS_RELEASE);
     seq_puts(m, "\n=============CPU=============\n");
 }
 
-//define CPU show
-static void cpu_show(struct seq_file *m, struct cpuinfo_x86 *c, unsigned int cpu)
+/*
+cpu_show()
+Put cpu information into file
+
+argument:
+m- Sequence file we read
+cpuinfo_x86- Information about processor, get from &cpu_data()
+
+return: no
+*/
+static void cpu_show(struct seq_file *m, struct cpuinfo_x86 *c)
 {
-    //put CPU information
     seq_printf(m, "processor\t\t: %u\n"
                "model name\t\t: %s\n"
                "physical id\t\t: %d\n"
@@ -24,12 +42,28 @@ static void cpu_show(struct seq_file *m, struct cpuinfo_x86 *c, unsigned int cpu
                "clflush size\t: %u\n"
                "cache_alignment\t\t: %d\n"
                "address sizes\t\t: %u bits physical, %u bits virtual\n\n"
-               , cpu, c->x86_model_id[0] ? c->x86_model_id : "unknown", c->phys_proc_id
+               , c-> cpu_index, c->x86_model_id[0] ? c->x86_model_id : "unknown", c->phys_proc_id
                , c->cpu_core_id, c->booted_cores, c->x86_cache_size, c->x86_clflush_size
                , c->x86_cache_alignment, c->x86_phys_bits, c->x86_virt_bits);
 }
 
 //define memory and time show
+/*
+other_show()
+Put memory and time information into file
+Memory show in kB
+
+argument:
+m- Sequence file we read
+variable:
+my_sys- System infomation
+pages[]- Other memory information
+uptime- System Uptime
+idle- System Idletime
+nesc, rem, i- Variable help us get Idle time
+
+return: no
+*/
 static void other_show(struct seq_file *m)
 {
     //Memory variable
@@ -42,12 +76,12 @@ static void other_show(struct seq_file *m)
     u64 nsec;
     u32 rem;
     int i;
-    //get my_sys
+    //Get my_sys
     si_meminfo(&my_sys);
-    //get other memory
+    //Get other memory
     for (lru = LRU_BASE; lru < NR_LRU_LISTS; lru++)
         pages[lru] = global_node_page_state(NR_LRU_BASE + lru);
-    //get Uptime Idletime
+    //Get Uptime Idletime
     nsec = 0;
     for_each_possible_cpu(i)
     nsec += (__force u64) kcpustat_cpu(i).cpustat[CPUTIME_IDLE];
@@ -72,20 +106,47 @@ static void other_show(struct seq_file *m)
                , (unsigned long) idle.tv_sec, (idle.tv_nsec / (NSEC_PER_SEC / 100)));
 }
 
-// This function is called for each "step" of a sequence.
+/*
+my_info_show()
+Sequence show operation
+Print version when we inside first time
+Print cpu information each time until printed all
+
+argument:
+m- Sequence file we read from kernel
+v- Information from start function, origin: &cpu_data()
+
+variable:
+c- change v's type into x86's cpuinfo
+
+return: 0
+*/
 static int my_info_show(struct seq_file *m, void *v)
 {
     //CPU variable
     struct cpuinfo_x86* c = v;
-    unsigned int cpu = c -> cpu_index;
 
     if(cpu == 0)
         version_show(m);
-    cpu_show(m, c, cpu);
+    cpu_show(m, c);
     return 0;
 }
 
-//Called at the begining of a sequence.
+/*
+my_info_start()
+Sequence start operation, change cpu_data according *pos
+
+argument:
+m- Sequence file we read from kernel
+pos- pointed to the cpu we will print the next
+
+variable:
+nr_cpu_ids- total process we have
+
+return:
+NULL- All processor printed, then go to Stop operation
+&cpu_data(*pos)- CPU data we havn't print
+*/.
 static void *my_info_start(struct seq_file *m, loff_t *pos)
 {
     *pos = cpumask_next(*pos - 1, cpu_online_mask);
@@ -94,17 +155,37 @@ static void *my_info_start(struct seq_file *m, loff_t *pos)
     return NULL;
 }
 
+/*
+my_info_show()
+Sequence next operation
+Change pos
+
+argument:
+m- Sequence file we read from kernel
+pos- pointed to processor we print now
+
+return:
+my_info_start(m, pos)
+*/
 static void *my_info_next(struct seq_file *m, void *v, loff_t *pos)
 {
     (*pos)++;
     return my_info_start(m, pos);
 }
 
-// This function is called at the end of a sequence.
+/*
+my_info_stop()
+Sequence stop operation
+Print Memory and time information then exit
+
+argument:
+m- Sequence file we read
+
+return: no
+*/.
 static void my_info_stop(struct seq_file *m, void *v)
 {
     other_show(m);
-    //nothing to do, we use a static value in start()
 }
 
 // This structure gather "function" to manage the sequence
@@ -116,12 +197,13 @@ const struct seq_operations my_info_ops =
     .show = my_info_show,
 };
 
-// This function is called when the /proc file is open.
+// This function called when the /proc file is open.
 static int procfile_open(struct inode *inode, struct file *file)
 {
     return seq_open(file, &my_info_ops);
 }
 
+//This structure is procfile operation
 static const struct file_operations my_file_ops =
 {
     .open = procfile_open,
@@ -130,7 +212,7 @@ static const struct file_operations my_file_ops =
     .release = seq_release,
 };
 
-//init module
+//Init module
 static int __init my_info_init(void)
 {
     struct proc_dir_entry *entry;
@@ -144,7 +226,7 @@ static int __init my_info_init(void)
     return 0;
 }
 
-//exit module
+//Exit module
 static void __exit my_info_exit(void)
 {
     remove_proc_entry(PROC_NAME, NULL);
@@ -154,5 +236,5 @@ static void __exit my_info_exit(void)
 module_init(my_info_init);
 module_exit(my_info_exit);
 
-//module license declaration
+//Module license declaration
 MODULE_LICENSE("GPL");
