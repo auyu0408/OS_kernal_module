@@ -1,5 +1,5 @@
-# OS2021_HW1
-This is operating system's homework 1, we write a kernel module to get following basic information and build a proc file in /proc/my_info  
+# OS2021_HW1  
+This is operating system's homework 1, we write a kernel module to get following basic information and build a proc file in `/proc/my_info`  
 - Version: Linux version  
 - CPU:  
   - processor, model name, physical id, core id, cpu cores, cache size, clflush size, cache_alignment, address sizes
@@ -9,46 +9,64 @@ This is operating system's homework 1, we write a kernel module to get following
   - Uptime, Idletime  
 
 We also have an interface to show these info, which only get data from proc file build by self.  
-This assignment was done on *linux 4.15.0*
+This assignment was done on **linux 4.15.0**
+## Enviroment  
+If you want to make app and module separately, check `Makefile.example`   
 ## Setup  
-1. Install hooks and build app
+Enter Makefile location:  
+```bash=
+cd module
+```
+1. Build and install module  
 ```bash=
 make
 ```
-2. Build and install module
+2. Delete other file except source code  
 ```bash=
-#in module/
-make
+make clean
+```
+3. Compile module  
+```bash=
+make module
+```
+4. Compile app  
+```bash=
+make app
+```
+5. Install module  
+```bash=
 make ins
 ```
-3. Remove module
+6. Remove module  
 ```bash=
-#in module/
 make rm
 ```
-4. Delete other file except source code in module
+7. Delete app  
 ```bash=
-#in module/
-make clean
+make del_app
 ```
-5. Remove app
+8. Delete module  
 ```bash=
-make clean
+make del_module
 ```
-## Useage
+## Useage  
+Enter app location:
+```
+cd module
+```
 - execute app
 ```bash=
 ./app
 ```
 ```
-Which information do you want?
-Version(v),CPU(c),Memory(m),Time(t),All(a),Exit(e)?
+Which information do you want?Which information do you want?
+Version(v),CPU(c\),Memory(m),Time(t),All(a),Exit(e)?
 v
 
 Version: Linux version 4.15.0-72-generic
 ------------------------------------------------------------
 Which information do you want?
-Version(v),CPU(c),Memory(m),Time(t),All(a),Exit(e)?
+Version(v),CPU(c\),Memory(m),Time(t),All(a),Exit(e)?
 a
 
 
@@ -94,6 +112,6 @@ Uptime			: 37597.24(s)
 Idletime		: 68581.15(s)
 ------------------------------------------------------------
 Which information do you want?
-Version(v),CPU(c),Memory(m),Time(t),All(a),Exit(e)?
+Version(v),CPU(c\),Memory(m),Time(t),All(a),Exit(e)?
 e
 ```
