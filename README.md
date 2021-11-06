@@ -12,11 +12,7 @@ We also have an interface to show these info, which only get data from proc file
 This assignment was done on **linux 4.15.0**
 ## Enviroment  
 If you want to make app and module separately, check `Makefile.example`   
-## Setup  
-Enter Makefile location:  
-```bash=
-cd module
-```
+## Setup 
 1. Build and install module  
 ```bash=
 make
@@ -27,7 +23,7 @@ make clean
 ```
 3. Compile module  
 ```bash=
-make module
+make mod
 ```
 4. Compile app  
 ```bash=
@@ -35,11 +31,11 @@ make app
 ```
 5. Install module  
 ```bash=
-make ins
+make ins_mod
 ```
 6. Remove module  
 ```bash=
-make rm
+make rm_mod
 ```
 7. Delete app  
 ```bash=
@@ -47,13 +43,9 @@ make del_app
 ```
 8. Delete module  
 ```bash=
-make del_module
+make del_mod
 ```
 ## Useage  
-Enter app location:
-```
-cd module
-```
 - execute app
 ```bash=
 ./app

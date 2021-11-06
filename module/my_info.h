@@ -50,7 +50,7 @@ static void cpu_show(struct seq_file *m, struct cpuinfo_x86 *c)
                "core id\t\t\t: %d\n"
                "cpu cores\t\t: %d\n"
                "cache size\t\t: %u KB\n"
-               "clflush size\t: %u\n"
+               "clflush size\t\t: %u\n"
                "cache_alignment\t\t: %d\n"
                "address sizes\t\t: %u bits physical, %u bits virtual\n\n"
                , c->cpu_index, c->x86_model_id[0] ? c->x86_model_id : "unknown", c->phys_proc_id

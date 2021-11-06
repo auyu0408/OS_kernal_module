@@ -5,7 +5,7 @@ SOURCE := app.c
 BINARY := app
 
 GIT_HOOKS := .git/hooks/applied
-all: $(GIT_HOOKS) $(BINARY)
+all: $(GIT_HOOKS) $(BINARY) mod ins_mod
 
 debug: CFLAGS += -DDEBUG -g
 debug: $(GIT_HOOKS) $(BINARY)
@@ -19,21 +19,23 @@ $(BINARY): $(SOURCE) $(patsubst %.c, %.h, $(SOURCE))
 .PHONY: clean
 clean:
 	rm -f *.o $(BINARY)
-	cd module
-	make clean
+	cd module && make clean
 	cd ..
 
-module:
-	cd module
-	make
+mod:
+	cd module && make
 	cd ..
 
-ins_module:
-	cd module
-	make ins
+ins_mod:
+	cd module && make ins
 	cd ..
 
-rm_module:
-	cd module
-	make rm
+rm_mod:
+	cd module && make rm
 	cd ..
+
+del_app:
+	rm -f *.o $(BINARY)
+
+del_mod:
+	cd module && make clean
