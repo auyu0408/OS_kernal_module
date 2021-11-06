@@ -19,3 +19,21 @@ $(BINARY): $(SOURCE) $(patsubst %.c, %.h, $(SOURCE))
 .PHONY: clean
 clean:
 	rm -f *.o $(BINARY)
+	cd module
+	make clean
+	cd ..
+
+module:
+	cd module
+	make
+	cd ..
+
+ins_module:
+	cd module
+	make ins
+	cd ..
+
+rm_module:
+	cd module
+	make rm
+	cd ..
