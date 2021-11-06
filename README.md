@@ -10,8 +10,6 @@ This is operating system's homework 1, we write a kernel module to get following
 
 We also have an interface to show these info, which only get data from proc file build by self.  
 This assignment was done on **linux 4.15.0**
-## Enviroment  
-If you want to make app and module separately, check `Makefile.example`   
 ## Setup 
 1. Build and install module  
 ```bash=
